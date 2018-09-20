@@ -15,7 +15,7 @@ import digitalocean
 from deploy import deploy
 
 
-with open('configuration2.json') as file:
+with open('configuration.json') as file:
     configuration = json.load(file)
 
 SSH_PATH: str = configuration['SSH_PATH']
@@ -86,7 +86,7 @@ def create():
             f'username: {username}  group: admin  password: {password}',
             'sudo privileges granted.',
         ])
-    return droplet.ip_address, username
+    return droplet.ip_address, username, password
 
 
 def _get_current_droplets(manager: digitalocean.Manager) -> List[str]:
@@ -235,8 +235,8 @@ def new_user(admin_username, connection) -> Tuple[str, str]:
 
 
 def main():
-    ip_address, username = create()
-    deploy(ip_address, username)
+    ip_address, username, password = create()
+    deploy(ip_address, username, password)
 
 
 if __name__ == '__main__':

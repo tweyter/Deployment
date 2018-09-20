@@ -12,7 +12,7 @@ from fabric import Connection
 from invoke import UnexpectedExit
 
 
-with open('configuration2.json') as file:
+with open('configuration.json') as file:
     configuration = json.load(file)
 
 SSH_PATH: str = configuration['SSH_PATH']
@@ -22,15 +22,6 @@ SERVER_REPO: str = configuration['SERVER_REPO']
 REPO_URL = f'git@github.com:FCView/{SERVER_REPO}.git'
 SITE_FOLDER: str = configuration['SITE_FOLDER']
 GITHUB_PRIVATE_KEY: str = configuration['GITHUB_PRIVATE_KEY']
-
-
-STAGES = {
-    'thor_server': {
-        'hosts': ['test_username@104.248.55.167'],
-        'code_branch': 'master',
-        # ...
-    },
-}
 
 
 def is_installed(pkg_name: str, connection: Connection) -> bool:

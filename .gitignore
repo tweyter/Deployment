@@ -1,3 +1,4 @@
 .idea
 configuration2.json
 droplet_data.txt
+__pycache__/

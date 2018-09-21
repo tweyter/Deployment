@@ -73,8 +73,9 @@ def create():
     if not droplet.ip_address:
         raise ValueError('Droplet creation failed. No ip address registered.')
     key_path = os.path.join(SSH_PATH, DIGITAL_OCEAN_PRIVATE_KEY)
-    print("Let's wait 5 seconds to make sure it's finished starting up.")
-    time.sleep(5)
+    delay = 10
+    print(f"Let's wait {delay} seconds to make sure it's finished starting up.")
+    time.sleep(delay)
     print("Okay, let's try to connect...")
     connection = Connection(
         host=droplet.ip_address,
@@ -85,8 +86,8 @@ def create():
         connection.open()
     except (TimeoutError, NoValidConnectionsError):
         connection.close()
-        print("Connection failed. Let's wait 5 more seconds and try again...")
-        time.sleep(5)
+        print(f"Connection failed. Let's wait {delay} more seconds and try again...")
+        time.sleep(delay)
         connection = Connection(
             host=droplet.ip_address,
             user='root',

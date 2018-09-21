@@ -10,6 +10,7 @@ from typing import List, Tuple
 
 from fabric import Connection
 from invoke import UnexpectedExit
+from paramiko.ssh_exception import NoValidConnectionsError
 import digitalocean
 
 from deploy import deploy
@@ -78,7 +79,7 @@ def create():
     )
     try:
         connection.open()
-    except TimeoutError:
+    except (TimeoutError, NoValidConnectionsError):
         connection.open()
     username, password = new_user(username, connection)
     with open('droplet_data.txt', 'a') as f:

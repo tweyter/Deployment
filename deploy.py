@@ -116,6 +116,7 @@ def _upload_github_ssh_key(github_key, connection):
     except UnexpectedExit:
         pass
     connection.put(key_path, '.ssh/')
+    connection.run(f"chmod 600 .ssh/{github_key}")
     if not rexists(sftp, '.ssh/config'):
         connection.run(
             'echo "IdentityFile ~/.ssh/{}" >> ~/.ssh/config'.format(github_key)

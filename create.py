@@ -6,6 +6,7 @@ import os
 import json
 import string
 import secrets
+import time
 from typing import List, Tuple
 
 from fabric import Connection
@@ -16,8 +17,8 @@ import digitalocean
 from deploy import deploy
 
 
-with open('configuration.json') as file:
-    configuration = json.load(file)
+with open('configuration.json') as f:
+    configuration = json.load(f)
 
 SSH_PATH: str = configuration['SSH_PATH']
 DIGITAL_OCEAN_PUBLIC_KEY: str = configuration['DIGITAL_OCEAN_PUBLIC_KEY']
@@ -72,6 +73,9 @@ def create():
     if not droplet.ip_address:
         raise ValueError('Droplet creation failed. No ip address registered.')
     key_path = os.path.join(SSH_PATH, DIGITAL_OCEAN_PRIVATE_KEY)
+    print("Let's wait 5 seconds to make sure it's finished starting up.")
+    time.sleep(5)
+    print("Okay, let's try to connect...")
     connection = Connection(
         host=droplet.ip_address,
         user='root',
@@ -80,10 +84,22 @@ def create():
     try:
         connection.open()
     except (TimeoutError, NoValidConnectionsError):
-        connection.open()
+        connection.close()
+        print("Connection failed. Let's wait 5 more seconds and try again...")
+        time.sleep(5)
+        connection = Connection(
+            host=droplet.ip_address,
+            user='root',
+            connect_kwargs={'key_filename': key_path}
+        )
+        try:
+            connection.open()
+        except (TimeoutError, NoValidConnectionsError):
+            print("Connection failed. Exiting...")
+            return None, None, None
     username, password = new_user(username, connection)
-    with open('droplet_data.txt', 'a') as f:
-        f.writelines([
+    with open('droplet_data.txt', 'a') as file:
+        file.writelines([
             f'username: {username}  group: admin  password: {password}',
             'sudo privileges granted.',
         ])
@@ -97,6 +113,7 @@ def _get_current_droplets(manager: digitalocean.Manager) -> List[str]:
 
     :return: List of current droplet names.
     """
+    print("Gathering information on current Digital Ocean droplets...")
     droplets = manager.get_all_droplets()
     names = [x.name for x in droplets]
     return names
@@ -222,7 +239,7 @@ def new_user(admin_username, connection) -> Tuple[str, str]:
 
     # Generate a 40 character alphanumeric password
     alphabet = string.ascii_letters + string.digits
-    password = ''.join(secrets.choice(alphabet) for i in range(40))
+    password = ''.join(secrets.choice(alphabet) for _ in range(40))
     # Set the password for the new admin user
     connection.run('echo "{password}\n{password}" | passwd {username}'.format(
         password=password,
@@ -237,7 +254,8 @@ def new_user(admin_username, connection) -> Tuple[str, str]:
 
 def main():
     ip_address, username, password = create()
-    deploy(ip_address, username, password)
+    if ip_address:
+        deploy(ip_address, username, password)
 
 
 if __name__ == '__main__':

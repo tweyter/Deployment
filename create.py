@@ -23,6 +23,7 @@ with open('configuration.json') as f:
 SSH_PATH: str = configuration['SSH_PATH']
 DIGITAL_OCEAN_PUBLIC_KEY: str = configuration['DIGITAL_OCEAN_PUBLIC_KEY']
 DIGITAL_OCEAN_PRIVATE_KEY: str = configuration['DIGITAL_OCEAN_PRIVATE_KEY']
+DIGITAL_OCEAN_KEY_PASSPHRASE: str = configuration['DIGITAL_OCEAN_KEY_PASSPHRASE']
 DIGITAL_OCEAN_TOKEN: str = configuration['DIGITAL_OCEAN_TOKEN']
 
 
@@ -73,6 +74,10 @@ def create():
     if not droplet.ip_address:
         raise ValueError('Droplet creation failed. No ip address registered.')
     key_path = os.path.join(SSH_PATH, DIGITAL_OCEAN_PRIVATE_KEY)
+    if DIGITAL_OCEAN_KEY_PASSPHRASE:
+        connect_kwargs = {'key_filename': key_path, 'passphrase': DIGITAL_OCEAN_KEY_PASSPHRASE}
+    else:
+        connect_kwargs = {'key_filename': key_path}
     delay = 10
     print(f"Let's wait {delay} seconds to make sure it's finished starting up.")
     time.sleep(delay)
@@ -80,7 +85,7 @@ def create():
     connection = Connection(
         host=droplet.ip_address,
         user='root',
-        connect_kwargs={'key_filename': key_path}
+        connect_kwargs=connect_kwargs
     )
     try:
         connection.open()
@@ -91,7 +96,7 @@ def create():
         connection = Connection(
             host=droplet.ip_address,
             user='root',
-            connect_kwargs={'key_filename': key_path}
+            connect_kwargs=connect_kwargs
         )
         try:
             connection.open()

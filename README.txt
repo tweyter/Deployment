@@ -23,23 +23,27 @@ The following components are initially blank and must be filled in by you:
 Special Note for SSH path: For any path such as SSH_PATH, make sure backslashes are escaped using "\\"
 or simply use a forward slash as the directory separator.
 
-Special Note for DIGITAL_OCEAN_KEY: You must use PuTTYGEN to create an OpenSSH compatible public key file.
+Special Note for DIGITAL_OCEAN_KEYs: You must use PuTTYGEN to create an OpenSSH compatible public key file.
 To do this, open your .ppk key file in Puttygen, and as long as it's a recent verion, it should
 display the public key in a window. Copy this and paste it into a new file named for the key
-(such as id_rsa.pub)  Also, the program assumes that both DIGITAL_OCEAN_KEY and GITHUB_KEY are in the same
+(such as id_rsa.pub) Then export the private key using the export pull down menu. Also, the program assumes that both DIGITAL_OCEAN_KEYs and GITHUB_KEY are in the same
 directory so make sure they're stored in the SSH_PATH directory.
 
 Special note for GITHUB_KEY: This is your PRIVATE key. It will be copied onto the server so that the server can
 clone the repository. In order to make an OpenSSH compatible private key, open your .ppk key file in Puttygen
 and in the Conversions dropdown menu select Export OpenSSH key. Make sure to save this in the same directory
-as your DIGITAL_OCEAN_KEY.
+as your DIGITAL_OCEAN_KEY. Also note, automated GitHub deployment won't work if the private key uses a passphrase, so
+make sure it doesn't have one.
 
   "SSH_PATH": The path to your SSH public key files.
 	Example: "C:\\path\\to\\deployment_package_directory"
 	
-  "DIGITAL_OCEAN_KEY": The name of your SSH public key file used for Digital Ocean
+  "DIGITAL_OCEAN_PRIVATE_KEY": The name of your SSH private key file used for Digital Ocean
+  "DIGITAL_OCEAN_KEY_PASSPHRASE": The passphrase used to unlock your private key. If you don't have one, just leave
+  this as "".
+  "DIGITAL_OCEAN_PUBLIC_KEY": The name of your SSH public key file used for Digital Ocean.
   "DIGITAL_OCEAN_TOKEN": The API token given to you by the Digital Ocean website.
-  "GITHUB_KEY" : The name of your SSH private key file used by GitHub.
+  "GITHUB_PRIVATE_KEY" : The name of your SSH private key file used by GitHub.
 
 After that, you can run either the create.py or deploy.py programs by typing either:
 python create.py

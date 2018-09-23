@@ -1,10 +1,10 @@
 {
   "SSH_PATH": "",
-  "DIGITAL_OCEAN_PUBLIC_KEY": "",
   "DIGITAL_OCEAN_PRIVATE_KEY": "",
+  "DIGITAL_OCEAN_KEY_PASSPHRASE": "",
+  "DIGITAL_OCEAN_PUBLIC_KEY": "",
   "DIGITAL_OCEAN_TOKEN": "",
   "SERVER_REPO": "Server",
   "CALCULATOR_REPO": "Py_Part117_Calculations",
-  "SITE_FOLDER" : "/var/www",
   "GITHUB_PRIVATE_KEY" : ""
 }

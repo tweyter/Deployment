@@ -17,10 +17,9 @@ with open('configuration.json') as file:
 
 SSH_PATH: str = configuration['SSH_PATH']
 DIGITAL_OCEAN_PRIVATE_KEY: str = configuration['DIGITAL_OCEAN_PRIVATE_KEY']
-
+DIGITAL_OCEAN_KEY_PASSPHRASE: str = configuration['DIGITAL_OCEAN_KEY_PASSPHRASE']
 SERVER_REPO: str = configuration['SERVER_REPO']
 REPO_URL = f'git@github.com:FCView/{SERVER_REPO}.git'
-SITE_FOLDER: str = configuration['SITE_FOLDER']
 GITHUB_PRIVATE_KEY: str = configuration['GITHUB_PRIVATE_KEY']
 
 
@@ -69,10 +68,14 @@ def deploy(
     Main deployment function.
     """
     key = os.path.join(SSH_PATH, DIGITAL_OCEAN_PRIVATE_KEY)
+    if DIGITAL_OCEAN_KEY_PASSPHRASE:
+        connect_kwargs = {'key_filename': key, 'passphrase': DIGITAL_OCEAN_KEY_PASSPHRASE}
+    else:
+        connect_kwargs = {'key_filename': key}
     connection = Connection(
         host=host,
         user='root',
-        connect_kwargs={'key_filename': key}
+        connect_kwargs=connect_kwargs
     )
     connection.open()
     connection.run('export DEBIAN_FRONTEND="noninteractive"')
